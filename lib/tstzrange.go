@@ -2,6 +2,7 @@ package lib
 
 import (
 	"database/sql/driver"
+	"strings"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type TstzrangeI interface {
 }
 
 var _ TstzrangeI = Tstzrange{}
+var timeFormat string = "2006-01-02 15:04:05-07:00"
 
 func NewTstzrange(prefix rune, fromTime, toTime time.Time, postfix rune) (*Tstzrange, error) {
 	return &Tstzrange{prefix: prefix, fromTime: fromTime, toTime: toTime, postfix: postfix}, nil
@@ -26,14 +28,34 @@ type Tstzrange struct {
 }
 
 func (t Tstzrange) fromTimeString() string {
-	return t.fromTime.Format("2006-01-02 15:04:05-07:00")
+	return t.fromTime.Format(timeFormat)
 }
 
 func (t Tstzrange) toTimeString() string {
-	return t.toTime.Format("2006-01-02 15:04:05-07:00")
+	return t.toTime.Format(timeFormat)
 }
 
 func (t Tstzrange) Scan(src interface{}) error {
+	str := src.(string)
+	t.prefix = rune(str[0])
+	t.postfix = rune(str[len(str)-1])
+	str = strings.Trim(str, "[]()")
+
+	fromTo := strings.Split(str, ",")
+
+	fromTime, err := time.Parse(timeFormat, fromTo[0])
+	if err != nil {
+		return err
+	}
+
+	toTime, err := time.Parse(timeFormat, fromTo[1])
+	if err != nil {
+		return err
+	}
+
+	t.fromTime = fromTime
+	t.toTime = toTime
+
 	return nil
 }
 
