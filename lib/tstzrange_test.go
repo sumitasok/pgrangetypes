@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func Test_tstzrange_Scan(t1 *testing.T) {
+func Test_Tstzrange_Scan(t1 *testing.T) {
 	type fields struct {
 		prefix   rune
 		fromTime time.Time
@@ -28,7 +28,7 @@ func Test_tstzrange_Scan(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := tstzrange{
+			t := Tstzrange{
 				prefix:   tt.fields.prefix,
 				fromTime: tt.fields.fromTime,
 				toTime:   tt.fields.toTime,
@@ -41,7 +41,7 @@ func Test_tstzrange_Scan(t1 *testing.T) {
 	}
 }
 
-func Test_tstzrange_Value(t1 *testing.T) {
+func Test_Tstzrange_Value(t1 *testing.T) {
 	layout := "2006-01-02T15:04:05-07:00"
 	str := "2014-11-12T11:45:26+05:30"
 	timeExample, err := time.Parse(layout, str)
@@ -74,7 +74,7 @@ func Test_tstzrange_Value(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := tstzrange{
+			t := Tstzrange{
 				prefix:   tt.fields.prefix,
 				fromTime: tt.fields.fromTime,
 				toTime:   tt.fields.toTime,
@@ -92,7 +92,7 @@ func Test_tstzrange_Value(t1 *testing.T) {
 	}
 }
 
-func Test_tstzrange_fromTimeString(t1 *testing.T) {
+func Test_Tstzrange_fromTimeString(t1 *testing.T) {
 	layout := "2006-01-02T15:04:05-07:00"
 	str := "2014-11-12T11:45:26+05:30"
 	timeExample, err := time.Parse(layout, str)
@@ -123,7 +123,7 @@ func Test_tstzrange_fromTimeString(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := tstzrange{
+			t := Tstzrange{
 				prefix:   tt.fields.prefix,
 				fromTime: tt.fields.fromTime,
 				toTime:   tt.fields.toTime,
@@ -136,7 +136,7 @@ func Test_tstzrange_fromTimeString(t1 *testing.T) {
 	}
 }
 
-func Test_tstzrange_toTimeString(t1 *testing.T) {
+func Test_Tstzrange_toTimeString(t1 *testing.T) {
 	layout := "2006-01-02T15:04:05-07:00"
 	str := "2014-11-12T11:45:26+05:30"
 	timeExample, err := time.Parse(layout, str)
@@ -167,7 +167,7 @@ func Test_tstzrange_toTimeString(t1 *testing.T) {
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
-			t := tstzrange{
+			t := Tstzrange{
 				prefix:   tt.fields.prefix,
 				fromTime: tt.fields.fromTime,
 				toTime:   tt.fields.toTime,

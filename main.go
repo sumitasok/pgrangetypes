@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	pgtype "pgrangetypes/lib"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -11,8 +13,8 @@ import (
 
 // Tstzrgt table
 type Tstzrgt struct {
-	Room int    `gorm:""`
-	Dttm string `gorm:""`
+	Room int               `gorm:""`
+	Dttm *pgtype.Tstzrange `gorm:""`
 }
 
 func (t Tstzrgt) TableName() string {
@@ -63,7 +65,12 @@ func main() {
 
 	log.Println("First row: ", tsRow)
 
-	ts1 := Tstzrgt{Room: 107, Dttm: "[2010-01-02 01:01:02+5:30, 2010-01-03 02:04:07+5:30]"}
+	tstzRange, err := pgtype.NewTstzrange('[', time.Now(), time.Now().Add(1*time.Hour), ')')
+	if err != nil {
+		log.Println(err)
+	}
+
+	ts1 := Tstzrgt{Room: 1077, Dttm: tstzRange}
 	tx = db.Create(&ts1)
 	if tx.Error != nil {
 		log.Fatal(tx.Error)
