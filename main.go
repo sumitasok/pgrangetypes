@@ -91,7 +91,68 @@ func main() {
 		log.Fatal(tx.Error)
 	}
 
-	log.Printf("prefix: %s", ts2.Dttm.ToString())
+	log.Printf("ts2: %s", ts2.Dttm.ToString())
+
+	var tss1 []Tstzrgt
+	tx = db.Where("dttm @> ?::timestamptz", "2010-01-03 02:04:07+5:30").Find(&tss1)
+	if tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
+
+	for i, tstzrgt := range tss1 {
+		log.Printf("tss1: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+	}
+
+	//select * from tstzrgt where dttm @> tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
+	var tss2 []Tstzrgt
+	tx = db.Where("dttm @> tstzrange(?, ?)", "2000-01-02 12:00:00+5:30", "2000-01-03 04:00:00+5:30").Find(&tss2)
+	if tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
+
+	for i, tstzrgt := range tss2 {
+		log.Printf("tss2: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+	}
+
+	//select * from tstzrgt where dttm @> tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
+	var tss3 []Tstzrgt
+	tx = db.Where("dttm && tstzrange(?, ?)", "2000-01-02 12:00:00+5:30", "2000-01-03 04:00:00+5:30").Find(&tss3)
+	if tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
+
+	for i, tstzrgt := range tss3 {
+		log.Printf("tss3: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+	}
+
+	// select * from tstzrgt where NOT dttm && tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
+	var tss4 []Tstzrgt
+	tx = db.Where("NOT dttm && tstzrange(?, ?)", "2000-01-02 12:00:00+5:30", "2000-01-03 04:00:00+5:30").Find(&tss4)
+	if tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
+
+	for i, tstzrgt := range tss4 {
+		log.Printf("tss4: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+	}
+
+	//select unnest(array[100, 101, 102, 103, 104, 107])
+	//    EXCEPT
+	//    select room from tstzrgt where dttm && tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
+
+	type dummy struct {
+		Room int
+	}
+
+	var tss5 []dummy
+	tx = db.Raw("select unnest(array[100, 101, 102, 103, 104, 107]) as room EXCEPT select room from tstzrgt where dttm && tstzrange(?, ?)", "2000-01-02 12:00:00+5:30", "2000-01-03 04:00:00+5:30").Scan(&tss5)
+	if tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
+
+	for i, tstzrgt := range tss5 {
+		log.Printf("tss5: %d %d", i, tstzrgt.Room)
+	}
 
 	log.Println("program run successfully")
 }

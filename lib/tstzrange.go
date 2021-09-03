@@ -42,6 +42,7 @@ func (t Tstzrange) toTimeString() string {
 
 func (t *Tstzrange) Scan(src interface{}) error {
 	str := src.(string)
+	//TODO: validations
 	t.prefix = rune(str[0])
 	t.postfix = rune(str[len(str)-1])
 	str = strings.Trim(str, "[]()\"")
