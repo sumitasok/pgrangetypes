@@ -17,7 +17,16 @@ type Tstzrgt struct {
 	Dttm *pgtype.Tstzrange `gorm:""`
 }
 
+type TstzrgtDummy struct {
+	Room int    `gorm:""`
+	Dttm string `gorm:""`
+}
+
 func (t Tstzrgt) TableName() string {
+	return "tstzrgt"
+}
+
+func (t TstzrgtDummy) TableName() string {
 	return "tstzrgt"
 }
 
@@ -57,7 +66,7 @@ func main() {
 		panic(err)
 	}
 
-	tsRow := Tstzrgt{}
+	tsRow := TstzrgtDummy{}
 	tx := db.First(&tsRow)
 	if tx.Error != nil {
 		log.Fatal(tx.Error)
@@ -75,6 +84,14 @@ func main() {
 	if tx.Error != nil {
 		log.Fatal(tx.Error)
 	}
+
+	ts2 := Tstzrgt{}
+	tx = db.Last(&ts2)
+	if tx.Error != nil {
+		log.Fatal(tx.Error)
+	}
+
+	log.Printf("prefix: %s", ts2.Dttm.ToString())
 
 	log.Println("program run successfully")
 }
