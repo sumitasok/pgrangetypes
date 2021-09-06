@@ -1,6 +1,7 @@
 package pgrangetypes
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"testing"
@@ -253,4 +254,58 @@ func ExampleDateParser_UnmarshalJSON() {
 	_ = json.Unmarshal(inputJson, &df)
 	fmt.Println(df)
 	// Output: &{{2016-01-02 15:04:05 -0700 -0700 2016-01-02 17:04:05 -0700 -0700}}
+}
+
+func TestDateParserOneTimeField_MarshalJSON(t *testing.T) {
+	outputJson := []byte(`{"from":"Sat, 02 Jan 2016 15:04:05 -0700"}`)
+
+	str := "2016-01-02T15:04:05-07:00"
+	timeExample, err := time.Parse(layout, str)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	type Data struct {
+		From DateParser `json:"from"`
+	}
+
+	data := Data{From: DateParser{timeExample}}
+
+	type fields struct {
+		data Data
+	}
+	type args struct {
+		from time.Time
+	}
+	type wants struct {
+		outputJson []byte
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wants   wants
+		wantErr bool
+	}{
+		{
+			name:    "StructToJson",
+			fields:  fields{data: data},
+			wants:   wants{outputJson: outputJson},
+			args:    args{from: timeExample},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			//strings.NewReader(
+			result, err := json.Marshal(tt.fields.data)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if bytes.Compare(result, tt.wants.outputJson) != 0 {
+				t.Errorf("UnmarshalJSON() got = %v, want %v", string(result), string(tt.wants.outputJson))
+			}
+		})
+	}
 }
