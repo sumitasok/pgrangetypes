@@ -1,4 +1,4 @@
-module github.com/sumitasok/pgrangetypes
+module pgrangetypes
 
 go 1.16
 

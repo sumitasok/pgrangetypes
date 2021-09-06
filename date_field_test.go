@@ -1,4 +1,4 @@
-package awesomeProject
+package pgrangetypes
 
 import (
 	"encoding/json"
