@@ -127,6 +127,15 @@ func Test_Tstzrange_Value(t1 *testing.T) {
 			want:    nil,
 			wantErr: true,
 		},
+		{
+			name: "ValidEmptyPrefixAndPostfix",
+			fields: fields{
+				fromTime: timeExample,
+				toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
+			},
+			want:    "[2014-11-12 11:45:26+05:30,2014-11-12 12:45:26+05:30)",
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {

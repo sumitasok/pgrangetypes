@@ -30,7 +30,17 @@ type Tstzrange struct {
 }
 
 func (t Tstzrange) ToString() string {
-	return string(t.prefix) + t.fromTimeString() + "," + t.toTimeString() + string(t.postfix)
+	prefix := string(t.prefix)
+	if t.prefix == 0 {
+		prefix = "["
+	} // default prefix
+
+	postfix := string(t.postfix)
+	if t.postfix == 0 {
+		postfix = ")"
+	} // default postfix
+
+	return prefix + t.fromTimeString() + "," + t.toTimeString() + postfix
 }
 
 func (t Tstzrange) fromTimeString() string {
@@ -72,6 +82,6 @@ func (t Tstzrange) Value() (driver.Value, error) {
 	if t.FromTime.After(t.ToTime) {
 		return nil, errors.New("from time cannot be after to time")
 	}
-	//TODO: if postfix and prefix are empty; use default.
-	return "[" + t.fromTimeString() + "," + t.toTimeString() + ")", nil
+
+	return t.ToString(), nil
 }
