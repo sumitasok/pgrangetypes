@@ -2,6 +2,7 @@ package lib
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -240,6 +241,72 @@ func Test_Tstzrange_toTimeString(t1 *testing.T) {
 			}
 			if got := t.toTimeString(); got != tt.want {
 				t1.Errorf("toTimeString() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestTstzrangeDateParser_UnmarshalJSON(t *testing.T) {
+	inputJson := []byte(`{
+		"room": 1079,
+		"dttm": {
+			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700",
+			"to_time": "Mon, 02 Jan 2016 17:04:05 -0700"
+		}
+	}`)
+
+	strFrom := "2016-01-02T15:04:05-07:00"
+	strTo := "2016-01-02T17:04:05-07:00"
+	timeFrom, err := time.Parse(layout, strFrom)
+	timeTo, err := time.Parse(layout, strTo)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	type Tstzrgt struct {
+		Room int
+		Dttm Tstzrange
+	}
+
+	type fields struct {
+		data Tstzrgt
+	}
+	type args struct {
+		data []byte
+	}
+	type wants struct {
+		from time.Time
+		to   time.Time
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wants   wants
+		wantErr bool
+	}{
+		{
+			name:    "ParseFromJson",
+			fields:  fields{data: Tstzrgt{}},
+			args:    args{data: inputJson},
+			wants:   wants{from: timeFrom, to: timeTo},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			df := &Tstzrgt{}
+			//strings.NewReader(
+			if err := json.Unmarshal(tt.args.data, &df); (err != nil) != tt.wantErr {
+				t.Errorf("UnmarshalJSON() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if df.Dttm.FromTime.Equal(tt.wants.from) != true {
+				t.Errorf("From_UnmarshalJSON() got = %v, want %v", df.Dttm.FromTime.String(), tt.wants.from.String())
+			}
+
+			if df.Dttm.ToTime.Equal(tt.wants.to) != true {
+				t.Errorf("To_UnmarshalJSON() got = %v, want %v", df.Dttm.ToTime.String(), tt.wants.to.String())
 			}
 		})
 	}

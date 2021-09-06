@@ -2,7 +2,6 @@ package lib
 
 import (
 	"encoding/json"
-	"log"
 	"testing"
 	"time"
 )
@@ -96,8 +95,6 @@ func TestDateParserOneTimeField_UnmarshalJSON(t *testing.T) {
 			if df.From.Equal(tt.wants.from) != true {
 				t.Errorf("UnmarshalJSON() got = %v, want %v", df.From.String(), tt.wants.from.String())
 			}
-
-			log.Println(df)
 		})
 	}
 }
