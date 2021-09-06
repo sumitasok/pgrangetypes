@@ -63,8 +63,8 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				fromTime: tt.fields.fromTime,
-				toTime:   tt.fields.toTime,
+				FromTime: tt.fields.fromTime,
+				ToTime:   tt.fields.toTime,
 				postfix:  tt.fields.postfix,
 			}
 			if err := t.Scan(tt.args.src); (err != nil) != tt.wantErr {
@@ -79,8 +79,8 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 				t1.Errorf("Scan() want = %v, got %v", string(tt.want.postfix), string(t.postfix))
 			}
 
-			if t.fromTime != tt.want.fields.fromTime {
-				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.fromTime)
+			if t.FromTime != tt.want.fields.fromTime {
+				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime)
 			}
 		})
 	}
@@ -116,13 +116,24 @@ func Test_Tstzrange_Value(t1 *testing.T) {
 			want:    "[2014-11-12 11:45:26+05:30,2014-11-12 12:45:26+05:30)",
 			wantErr: false,
 		},
+		{
+			name: "InValidTime_From_after_To",
+			fields: fields{
+				prefix:   '[',
+				fromTime: timeExample,
+				toTime:   timeExample.Add(time.Duration(-1 * time.Hour)),
+				postfix:  ')',
+			},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				fromTime: tt.fields.fromTime,
-				toTime:   tt.fields.toTime,
+				FromTime: tt.fields.fromTime,
+				ToTime:   tt.fields.toTime,
 				postfix:  tt.fields.postfix,
 			}
 			got, err := t.Value()
@@ -170,8 +181,8 @@ func Test_Tstzrange_fromTimeString(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				fromTime: tt.fields.fromTime,
-				toTime:   tt.fields.toTime,
+				FromTime: tt.fields.fromTime,
+				ToTime:   tt.fields.toTime,
 				postfix:  tt.fields.postfix,
 			}
 			if got := t.fromTimeString(); got != tt.want {
@@ -214,8 +225,8 @@ func Test_Tstzrange_toTimeString(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				fromTime: tt.fields.fromTime,
-				toTime:   tt.fields.toTime,
+				FromTime: tt.fields.fromTime,
+				ToTime:   tt.fields.toTime,
 				postfix:  tt.fields.postfix,
 			}
 			if got := t.toTimeString(); got != tt.want {

@@ -91,6 +91,17 @@ func main() {
 		log.Fatal(tx.Error)
 	}
 
+	tstzRangeWrong, err := pgtype.NewTstzrange('[', time.Now(), time.Now().Add(-1*time.Hour), ')')
+	if err != nil {
+		log.Println(err)
+	}
+
+	tsWrongdatetime := Tstzrgt{Room: 1078, Dttm: tstzRangeWrong}
+	tx = db.Create(&tsWrongdatetime)
+	if tx.Error != nil {
+		log.Println("Error:", tx.Error)
+	}
+
 	log.Printf("ts2: %s", ts2.Dttm.ToString())
 
 	var tss1 []Tstzrgt
