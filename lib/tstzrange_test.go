@@ -63,8 +63,8 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				FromTime: tt.fields.fromTime,
-				ToTime:   tt.fields.toTime,
+				FromTime: DateParser{tt.fields.fromTime},
+				ToTime:   DateParser{tt.fields.toTime},
 				postfix:  tt.fields.postfix,
 			}
 			if err := t.Scan(tt.args.src); (err != nil) != tt.wantErr {
@@ -79,7 +79,7 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 				t1.Errorf("Scan() want = %v, got %v", string(tt.want.postfix), string(t.postfix))
 			}
 
-			if t.FromTime != tt.want.fields.fromTime {
+			if t.FromTime.Time != tt.want.fields.fromTime {
 				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime)
 			}
 		})
@@ -141,8 +141,8 @@ func Test_Tstzrange_Value(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				FromTime: tt.fields.fromTime,
-				ToTime:   tt.fields.toTime,
+				FromTime: DateParser{tt.fields.fromTime},
+				ToTime:   DateParser{tt.fields.toTime},
 				postfix:  tt.fields.postfix,
 			}
 			got, err := t.Value()
@@ -190,8 +190,8 @@ func Test_Tstzrange_fromTimeString(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				FromTime: tt.fields.fromTime,
-				ToTime:   tt.fields.toTime,
+				FromTime: DateParser{tt.fields.fromTime},
+				ToTime:   DateParser{tt.fields.toTime},
 				postfix:  tt.fields.postfix,
 			}
 			if got := t.fromTimeString(); got != tt.want {
@@ -234,8 +234,8 @@ func Test_Tstzrange_toTimeString(t1 *testing.T) {
 		t1.Run(tt.name, func(t1 *testing.T) {
 			t := Tstzrange{
 				prefix:   tt.fields.prefix,
-				FromTime: tt.fields.fromTime,
-				ToTime:   tt.fields.toTime,
+				FromTime: DateParser{tt.fields.fromTime},
+				ToTime:   DateParser{tt.fields.toTime},
 				postfix:  tt.fields.postfix,
 			}
 			if got := t.toTimeString(); got != tt.want {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	pgtype "pgrangetypes/lib"
@@ -13,13 +14,13 @@ import (
 
 // Tstzrgt table
 type Tstzrgt struct {
-	Room int               `gorm:""`
-	Dttm *pgtype.Tstzrange `gorm:""`
+	Room int               `gorm:"" json:"room"`
+	Dttm *pgtype.Tstzrange `gorm:"" json:"dttm"`
 }
 
 type TstzrgtDummy struct {
-	Room int    `gorm:""`
-	Dttm string `gorm:""`
+	Room int    `gorm:"" json:"room"`
+	Dttm string `gorm:"" json:"dttm"`
 }
 
 func (t Tstzrgt) TableName() string {
@@ -90,6 +91,7 @@ func main() {
 	if tx.Error != nil {
 		log.Fatal(tx.Error)
 	}
+	log.Printf("ts2: %s", ts2.Dttm.ToString())
 
 	tstzRangeWrong, err := pgtype.NewTstzrange('[', time.Now(), time.Now().Add(-1*time.Hour), ')')
 	if err != nil {
@@ -102,7 +104,17 @@ func main() {
 		log.Println("Error:", tx.Error)
 	}
 
-	log.Printf("ts2: %s", ts2.Dttm.ToString())
+	inputJson := []byte(`{
+		"room": 1079,
+		"dttm": {
+			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700"
+			"to_time": "Mon, 02 Jan 2016 17:04:05 -0700"
+		}
+	}`)
+
+	ts3 := Tstzrgt{}
+	json.Unmarshal(inputJson, &ts3)
+	log.Println("InputJSON", ts3.Room)
 
 	var tss1 []Tstzrgt
 	tx = db.Where("dttm @> ?::timestamptz", "2010-01-03 02:04:07+5:30").Find(&tss1)

@@ -19,13 +19,13 @@ type TstzrangeI interface {
 var timeFormat = "2006-01-02 15:04:05-07:00"
 
 func NewTstzrange(prefix rune, fromTime, toTime time.Time, postfix rune) (*Tstzrange, error) {
-	return &Tstzrange{prefix: prefix, FromTime: fromTime, ToTime: toTime, postfix: postfix}, nil
+	return &Tstzrange{prefix: prefix, FromTime: DateParser{fromTime}, ToTime: DateParser{toTime}, postfix: postfix}, nil
 }
 
 type Tstzrange struct {
 	prefix   rune
-	FromTime time.Time `json:"from_time"`
-	ToTime   time.Time `json:"to_time"`
+	FromTime DateParser `json:"from_time"`
+	ToTime   DateParser `json:"to_time"`
 	postfix  rune
 }
 
@@ -72,14 +72,14 @@ func (t *Tstzrange) Scan(src interface{}) error {
 		return err
 	}
 
-	t.FromTime = fromTime
-	t.ToTime = toTime
+	t.FromTime = DateParser{fromTime}
+	t.ToTime = DateParser{toTime}
 
 	return nil
 }
 
 func (t Tstzrange) Value() (driver.Value, error) {
-	if t.FromTime.After(t.ToTime) {
+	if t.FromTime.After(t.ToTime.Time) {
 		return nil, errors.New("from time cannot be after to time")
 	}
 
