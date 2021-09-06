@@ -107,14 +107,17 @@ func main() {
 	inputJson := []byte(`{
 		"room": 1079,
 		"dttm": {
-			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700"
+			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700",
 			"to_time": "Mon, 02 Jan 2016 17:04:05 -0700"
 		}
 	}`)
 
 	ts3 := Tstzrgt{}
-	json.Unmarshal(inputJson, &ts3)
-	log.Println("InputJSON", ts3.Room)
+	err = json.Unmarshal(inputJson, &ts3)
+	if err != nil {
+		log.Println("InputJSON Error", err)
+	}
+	log.Println("InputJSON", ts3.Room, ts3.Dttm)
 
 	var tss1 []Tstzrgt
 	tx = db.Where("dttm @> ?::timestamptz", "2010-01-03 02:04:07+5:30").Find(&tss1)
