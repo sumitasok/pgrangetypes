@@ -3,6 +3,7 @@ package lib
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -310,4 +311,26 @@ func TestTstzrangeDateParser_UnmarshalJSON(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleTstzrange_ToString() {
+	inputJson := []byte(`{
+		"room": 1079,
+		"dttm": {
+			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700",
+			"to_time": "Mon, 02 Jan 2016 17:04:05 -0700"
+		}
+	}`)
+
+	type Tstzrgt struct {
+		Room int
+		Dttm Tstzrange
+	}
+
+	df := &Tstzrgt{}
+	_ = json.Unmarshal(inputJson, &df)
+
+	// TODO: figure out why -0700 is twice in each time.Time?
+	fmt.Println(df)
+	// Output: &{1079 {0 2016-01-02 15:04:05 -0700 -0700 2016-01-02 17:04:05 -0700 -0700 0}}
 }

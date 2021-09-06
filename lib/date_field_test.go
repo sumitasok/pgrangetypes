@@ -2,6 +2,7 @@ package lib
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -229,4 +230,27 @@ func TestDateParserTwoTimeFieldInNestedStruct_UnmarshalJSON(t *testing.T) {
 			}
 		})
 	}
+}
+
+func ExampleDateParser_UnmarshalJSON() {
+	inputJson := []byte(`{
+		"daterange": {
+			"from": "Mon, 02 Jan 2016 15:04:05 -0700",
+			"to": "Mon, 02 Jan 2016 17:04:05 -0700"
+		}
+	}`)
+
+	type DateRange struct {
+		From DateParser `json:"from"`
+		To   DateParser `json:"to"`
+	}
+
+	type Data struct {
+		Daterange DateRange
+	}
+
+	df := &Data{}
+	_ = json.Unmarshal(inputJson, &df)
+	fmt.Println(df)
+	// Output: &{{2016-01-02 15:04:05 -0700 -0700 2016-01-02 17:04:05 -0700 -0700}}
 }
