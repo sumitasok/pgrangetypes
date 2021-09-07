@@ -257,6 +257,8 @@ func ExampleDateParser_UnmarshalJSON() {
 }
 
 func TestDateParserOneTimeField_MarshalJSON(t *testing.T) {
+	// https://goinbigdata.com/how-to-correctly-serialize-json-string-in-golang/
+	// https://stackoverflow.com/questions/23695479/how-to-format-timestamp-in-outgoing-json
 	outputJson := []byte(`{"from":"Sat, 02 Jan 2016 15:04:05 -0700"}`)
 
 	str := "2016-01-02T15:04:05-07:00"
