@@ -1,9 +1,13 @@
 package pgrangetypes
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
+
+var _ json.Marshaler = DateParser{}
+var _ json.Unmarshaler = &DateParser{}
 
 // https://stackoverflow.com/questions/54618633/parsing-time-as-2006-01-02t150405z0700-cannot-parse-as-2006
 // date format // Mon, 02 Jan 2006 15:04:05 -0700

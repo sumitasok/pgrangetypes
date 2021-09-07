@@ -51,6 +51,18 @@ func (t Tstzrange) toTimeString() string {
 	return t.ToTime.Format(timeFormat)
 }
 
+func (t Tstzrange) Empty() bool {
+	if t.FromTime.Equal(time.Time{}) {
+		return true
+	}
+
+	if t.ToTime.Equal(time.Time{}) {
+		return true
+	}
+
+	return false
+}
+
 func (t *Tstzrange) Scan(src interface{}) error {
 	str := src.(string)
 	//TODO: validations

@@ -251,8 +251,8 @@ func TestTstzrangeDateParser_UnmarshalJSON(t *testing.T) {
 	inputJson := []byte(`{
 		"room": 1079,
 		"dttm": {
-			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700",
-			"to_time": "Mon, 02 Jan 2016 17:04:05 -0700"
+			"fromTime": "Mon, 02 Jan 2016 15:04:05 -0700",
+			"toTime": "Mon, 02 Jan 2016 17:04:05 -0700"
 		}
 	}`)
 
@@ -317,8 +317,8 @@ func ExampleTstzrange_ToString() {
 	inputJson := []byte(`{
 		"room": 1079,
 		"dttm": {
-			"from_time": "Mon, 02 Jan 2016 15:04:05 -0700",
-			"to_time": "Mon, 02 Jan 2016 17:04:05 -0700"
+			"fromTime": "Mon, 02 Jan 2016 15:04:05 -0700",
+			"toTime": "Mon, 02 Jan 2016 17:04:05 -0700"
 		}
 	}`)
 
@@ -333,4 +333,59 @@ func ExampleTstzrange_ToString() {
 	// TODO: figure out why -0700 is twice in each time.Time?
 	fmt.Println(df)
 	// Output: &{1079 {0 2016-01-02 15:04:05 -0700 -0700 2016-01-02 17:04:05 -0700 -0700 0}}
+}
+
+func TestTstzrange_Empty(t1 *testing.T) {
+	type Tstzrgt struct {
+		Room int
+		Dttm Tstzrange
+	}
+
+	type args struct {
+		data []byte
+	}
+
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "TrueForEmpty",
+			args: args{
+				data: []byte(`{"room": 1079}`),
+			},
+			want: true,
+		},
+		{
+			name: "FalseWhenFromAndTrue",
+			args: args{
+				data: []byte(`{"room": 1079,"dttm": {"fromTime": "Mon, 02 Jan 2016 15:04:05 -0700","toTime": "Mon, 02 Jan 2016 17:04:05 -0700"}}`),
+			},
+			want: false,
+		},
+		{
+			name: "TrueWhenFromEmpty",
+			args: args{
+				data: []byte(`{"room": 1079,"dttm": {"toTime": "Mon, 02 Jan 2016 17:04:05 -0700"}}`),
+			},
+			want: true,
+		},
+		{
+			name: "TrueWhenToEmpty",
+			args: args{
+				data: []byte(`{"room": 1079,"dttm": {"fromTime": "Mon, 02 Jan 2016 17:04:05 -0700"}}`),
+			},
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t1.Run(tt.name, func(t1 *testing.T) {
+			df := &Tstzrgt{}
+			_ = json.Unmarshal(tt.args.data, &df)
+			if got := df.Dttm.Empty(); got != tt.want {
+				t1.Errorf("Empty() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
