@@ -24,8 +24,8 @@ func NewTstzrange(prefix rune, fromTime, toTime time.Time, postfix rune) (*Tstzr
 
 type Tstzrange struct {
 	prefix   rune
-	FromTime DateParser `json:"from_time"`
-	ToTime   DateParser `json:"to_time"`
+	FromTime DateParser `json:"fromTime"`
+	ToTime   DateParser `json:"toTime"`
 	postfix  rune
 }
 
