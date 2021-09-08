@@ -91,7 +91,7 @@
 //	if tx.Error != nil {
 //		log.Fatal(tx.Error)
 //	}
-//	log.Printf("ts2: %s", ts2.Dttm.ToString())
+//	log.Printf("ts2: %s", ts2.Dttm.String())
 //
 //	tstzRangeWrong, err := pgtype.NewTstzrange('[', time.Now(), time.Now().Add(-1*time.Hour), ')')
 //	if err != nil {
@@ -126,7 +126,7 @@
 //	}
 //
 //	for i, tstzrgt := range tss1 {
-//		log.Printf("tss1: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+//		log.Printf("tss1: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.String())
 //	}
 //
 //	//select * from tstzrgt where dttm @> tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
@@ -137,7 +137,7 @@
 //	}
 //
 //	for i, tstzrgt := range tss2 {
-//		log.Printf("tss2: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+//		log.Printf("tss2: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.String())
 //	}
 //
 //	//select * from tstzrgt where dttm @> tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
@@ -148,7 +148,7 @@
 //	}
 //
 //	for i, tstzrgt := range tss3 {
-//		log.Printf("tss3: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+//		log.Printf("tss3: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.String())
 //	}
 //
 //	// select * from tstzrgt where NOT dttm && tstzrange('2000-01-02 12:00:00+5:30', '2000-01-03 04:00:00+5:30');
@@ -159,7 +159,7 @@
 //	}
 //
 //	for i, tstzrgt := range tss4 {
-//		log.Printf("tss4: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.ToString())
+//		log.Printf("tss4: %d %d %s", i, tstzrgt.Room, tstzrgt.Dttm.String())
 //	}
 //
 //	//select unnest(array[100, 101, 102, 103, 104, 107])

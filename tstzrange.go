@@ -29,7 +29,7 @@ type Tstzrange struct {
 	postfix  rune
 }
 
-func (t Tstzrange) ToString() string {
+func (t Tstzrange) String() string {
 	prefix := string(t.prefix)
 	if t.prefix == 0 {
 		prefix = "["
@@ -65,6 +65,14 @@ func (t Tstzrange) Empty() bool {
 
 func (t *Tstzrange) Scan(src interface{}) error {
 	str := src.(string)
+
+	if str == "empty" {
+		t.prefix = '['
+		t.FromTime = DateParser{time.Time{}}
+		t.ToTime = DateParser{time.Time{}}
+		t.postfix = ')'
+		return nil
+	}
 	//TODO: validations
 	t.prefix = rune(str[0])
 	t.postfix = rune(str[len(str)-1])
@@ -95,5 +103,5 @@ func (t Tstzrange) Value() (driver.Value, error) {
 		return nil, errors.New("from time cannot be after to time")
 	}
 
-	return t.ToString(), nil
+	return t.String(), nil
 }

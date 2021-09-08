@@ -60,6 +60,17 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 				fields:  _fields,
 			},
 		},
+		{
+			name:    "EmptyScan",
+			fields:  _fields,
+			args:    args{src: "empty"},
+			wantErr: false,
+			want: want{
+				prefix:  _fields.prefix,
+				postfix: _fields.postfix,
+				fields:  fields{prefix: '[', fromTime: time.Time{}, toTime: time.Time{}, postfix: ')'},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
@@ -313,7 +324,7 @@ func TestTstzrangeDateParser_UnmarshalJSON(t *testing.T) {
 	}
 }
 
-func ExampleTstzrange_ToString() {
+func ExampleTstzrange_String() {
 	inputJson := []byte(`{
 		"room": 1079,
 		"dttm": {
@@ -330,9 +341,8 @@ func ExampleTstzrange_ToString() {
 	df := &Tstzrgt{}
 	_ = json.Unmarshal(inputJson, &df)
 
-	// TODO: figure out why -0700 is twice in each time.Time?
 	fmt.Println(df)
-	// Output: &{1079 {0 2016-01-02 15:04:05 -0700 -0700 2016-01-02 17:04:05 -0700 -0700 0}}
+	// Output: &{1079 [2016-01-02 15:04:05-07:00,2016-01-02 17:04:05-07:00)}
 }
 
 func TestTstzrange_Empty(t1 *testing.T) {
