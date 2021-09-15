@@ -3,6 +3,7 @@ package pgrangetypes
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -20,13 +21,16 @@ func (df *DateParser) UnmarshalJSON(data []byte) error {
 	if string(data) == "null" || string(data) == `""` {
 		return nil
 	}
+
+	dataStr := strings.Trim(string(data), "\"")
+
 	// Fractional seconds are handled implicitly by Parse.
-	tt, err := time.Parse(`"`+time.RFC1123Z+`"`, string(data))
+	tt, err := time.Parse(timeFormat, dataStr)
 	*df = DateParser{tt}
 	return err
 }
 
 func (df DateParser) MarshalJSON() ([]byte, error) {
-	stamp := fmt.Sprintf("\"%s\"", time.Time(df.Time).Format(time.RFC1123Z))
+	stamp := fmt.Sprintf("\"%s\"", time.Time(df.Time).Format(timeFormat))
 	return []byte(stamp), nil
 }

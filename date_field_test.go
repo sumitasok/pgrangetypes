@@ -11,7 +11,7 @@ import (
 const layout = "2006-01-02T15:04:05-07:00"
 
 func TestDateParser_UnmarshalJSON(t *testing.T) {
-	inputJson := []byte(`"Mon, 02 Jan 2016 15:04:05 -0700"`)
+	inputJson := []byte("2016-01-02T17:04:05-07:00")
 
 	type fields struct {
 		Time time.Time
@@ -49,7 +49,7 @@ func TestDateParser_UnmarshalJSON(t *testing.T) {
 
 func TestDateParserOneTimeField_UnmarshalJSON(t *testing.T) {
 	inputJson := []byte(`{
-		"from": "Mon, 02 Jan 2016 15:04:05 -0700"
+		"from": "2016-01-02T15:04:05-07:00"
 	}`)
 
 	str := "2016-01-02T15:04:05-07:00"
@@ -103,8 +103,8 @@ func TestDateParserOneTimeField_UnmarshalJSON(t *testing.T) {
 
 func TestDateParserTwoTimeField_UnmarshalJSON(t *testing.T) {
 	inputJson := []byte(`{
-		"from": "Mon, 02 Jan 2016 15:04:05 -0700",
-		"to": "Mon, 02 Jan 2016 17:04:05 -0700"
+		"from": "2016-01-02T15:04:05-07:00",
+		"to": "2016-01-02T17:04:05-07:00"
 	}`)
 
 	strFrom := "2016-01-02T15:04:05-07:00"
@@ -167,8 +167,8 @@ func TestDateParserTwoTimeField_UnmarshalJSON(t *testing.T) {
 func TestDateParserTwoTimeFieldInNestedStruct_UnmarshalJSON(t *testing.T) {
 	inputJson := []byte(`{
 		"daterange": {
-			"from": "Mon, 02 Jan 2016 15:04:05 -0700",
-			"to": "Mon, 02 Jan 2016 17:04:05 -0700"
+			"from": "2016-01-02T15:04:05-07:00",
+			"to": "2016-01-02T17:04:05-07:00"
 		}
 	}`)
 
@@ -236,8 +236,8 @@ func TestDateParserTwoTimeFieldInNestedStruct_UnmarshalJSON(t *testing.T) {
 func ExampleDateParser_UnmarshalJSON() {
 	inputJson := []byte(`{
 		"daterange": {
-			"from": "Mon, 02 Jan 2016 15:04:05 -0700",
-			"to": "Mon, 02 Jan 2016 17:04:05 -0700"
+			"from": "2016-01-02T15:04:05-07:00",
+			"to": "2016-01-02T17:04:05-07:00"
 		}
 	}`)
 
@@ -259,7 +259,7 @@ func ExampleDateParser_UnmarshalJSON() {
 func TestDateParserOneTimeField_MarshalJSON(t *testing.T) {
 	// https://goinbigdata.com/how-to-correctly-serialize-json-string-in-golang/
 	// https://stackoverflow.com/questions/23695479/how-to-format-timestamp-in-outgoing-json
-	outputJson := []byte(`{"from":"Sat, 02 Jan 2016 15:04:05 -0700"}`)
+	outputJson := []byte(`{"from":"2016-01-02T15:04:05-07:00"}`)
 
 	str := "2016-01-02T15:04:05-07:00"
 	timeExample, err := time.Parse(layout, str)
