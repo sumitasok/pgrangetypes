@@ -42,6 +42,7 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		toTime:   timeExample2.Add(time.Duration(1 * time.Hour)),
 		postfix:  ')',
 	}
+
 	_tstzrange, err := NewTstzrange(_fields.prefix, _fields.fromTime, _fields.toTime, _fields.postfix)
 	assert.NoError(err)
 
@@ -111,9 +112,12 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 				t1.Errorf("Scan() want = %v, got %v", string(tt.want.postfix), string(t.postfix))
 			}
 
-			if t.FromTime.Time != tt.want.fields.fromTime {
+			// if t.FromTime.Time != tt.want.fields.fromTime {
 
-				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime)
+			// 	t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime.Time)
+			// }
+			if !reflect.DeepEqual(t.FromTime.Time, tt.want.fields.fromTime) {
+				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime.Time)
 			}
 		})
 	}
