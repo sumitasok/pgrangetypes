@@ -12,7 +12,10 @@ import (
 func Test_Tstzrange_Scan(t1 *testing.T) {
 	layout := "2006-01-02T15:04:05-07:00"
 	str := "2014-11-12T11:45:26+05:30"
+	str2 := "2014-11-12T11:45:26+00:00"
 	timeExample, err := time.Parse(layout, str)
+	timeExample2, err := time.Parse(layout, str2)
+
 	assert := assert.New(t1)
 	assert.NoError(err)
 
@@ -30,6 +33,13 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		prefix:   '[',
 		fromTime: timeExample,
 		toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
+		postfix:  ')',
+	}
+
+	_fields2 := fields{
+		prefix:   '[',
+		fromTime: timeExample2,
+		toTime:   timeExample2.Add(time.Duration(1 * time.Hour)),
 		postfix:  ')',
 	}
 	_tstzrange, err := NewTstzrange(_fields.prefix, _fields.fromTime, _fields.toTime, _fields.postfix)
@@ -71,13 +81,13 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		},
 		{
 			name:    "ValidScan2",
-			fields:  _fields,
-			args:    args{src: "[2014-11-12T11:45:26+00:00,2014-11-12T12:45:26+00:00)"},
+			fields:  _fields2,
+			args:    args{src: "[2014-11-12 11:45:26+00:00,2014-11-12 12:45:26+00:00)"},
 			wantErr: false,
 			want: want{
-				prefix:  _fields.prefix,
-				postfix: _fields.postfix,
-				fields:  _fields,
+				prefix:  _fields2.prefix,
+				postfix: _fields2.postfix,
+				fields:  _fields2,
 			},
 		},
 	}
@@ -102,6 +112,7 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 			}
 
 			if t.FromTime.Time != tt.want.fields.fromTime {
+
 				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime)
 			}
 		})
