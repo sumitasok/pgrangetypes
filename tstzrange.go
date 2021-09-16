@@ -16,7 +16,7 @@ type TstzrangeI interface {
 }
 
 //var _ TstzrangeI = Tstzrange{}
-var timeFormat = "2006-01-02 15:04:05-07:00"
+var timeFormat = "2006-01-02T15:04:05-07:00"
 
 func NewTstzrange(prefix rune, fromTime, toTime time.Time, postfix rune) (*Tstzrange, error) {
 	return &Tstzrange{prefix: prefix, FromTime: DateParser{fromTime}, ToTime: DateParser{toTime}, postfix: postfix}, nil
@@ -80,14 +80,18 @@ func (t *Tstzrange) Scan(src interface{}) error {
 
 	fromTo := strings.Split(str, ",")
 
-	from := strings.Trim(fromTo[0], "\"")
-	fromTime, err := time.Parse(timeFormat, from)
+	fromStr := strings.Trim(fromTo[0], "\"")
+	fromStr = t.updateDateTimeScan(fromStr)
+
+	fromTime, err := time.Parse(timeFormat, fromStr)
 	if err != nil {
 		return err
 	}
 
-	to := strings.Trim(fromTo[1], "\"")
-	toTime, err := time.Parse(timeFormat, to)
+	toStr := strings.Trim(fromTo[1], "\"")
+	toStr = t.updateDateTimeScan(toStr)
+
+	toTime, err := time.Parse(timeFormat, toStr)
 	if err != nil {
 		return err
 	}
@@ -104,4 +108,36 @@ func (t Tstzrange) Value() (driver.Value, error) {
 	}
 
 	return t.String(), nil
+}
+
+func (t Tstzrange) updateTimeZoneScan(timeComponent string) string {
+	var timeZone string
+
+	if contains := strings.Contains(timeComponent, "-"); contains {
+		timeZone = strings.Split(timeComponent, "-")[1]
+	}
+
+	if contains := strings.Contains(timeComponent, "+"); contains {
+		timeZone = strings.Split(timeComponent, "+")[1]
+	}
+	if timeZone == "00" {
+		timeComponent = timeComponent + ":00"
+	}
+	return timeComponent
+}
+
+func (t Tstzrange) updateDateTimeScan(dateTime string) string {
+	var dateTimeComponents []string
+
+	if ok := strings.Contains(dateTime, " "); ok {
+		dateTimeComponents = strings.Split(dateTime, " ")
+	}
+	if ok := strings.Contains(dateTime, "T"); ok {
+		dateTimeComponents = strings.Split(dateTime, "T")
+	}
+	dateComponent := dateTimeComponents[0]
+	timeComponent := dateTimeComponents[1]
+
+	timeComponent = t.updateTimeZoneScan(timeComponent)
+	return dateComponent + "T" + timeComponent
 }

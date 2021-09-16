@@ -3,7 +3,6 @@ package pgrangetypes
 import (
 	"database/sql/driver"
 	"encoding/json"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -13,7 +12,10 @@ import (
 func Test_Tstzrange_Scan(t1 *testing.T) {
 	layout := "2006-01-02T15:04:05-07:00"
 	str := "2014-11-12T11:45:26+05:30"
+	str2 := "2014-11-12T11:45:26+00:00"
 	timeExample, err := time.Parse(layout, str)
+	timeExample2, err := time.Parse(layout, str2)
+
 	assert := assert.New(t1)
 	assert.NoError(err)
 
@@ -33,6 +35,14 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
 		postfix:  ')',
 	}
+
+	_fields2 := fields{
+		prefix:   '[',
+		fromTime: timeExample2,
+		toTime:   timeExample2.Add(time.Duration(1 * time.Hour)),
+		postfix:  ')',
+	}
+
 	_tstzrange, err := NewTstzrange(_fields.prefix, _fields.fromTime, _fields.toTime, _fields.postfix)
 	assert.NoError(err)
 
@@ -41,7 +51,6 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		postfix rune
 		fields  fields
 	}
-
 	tests := []struct {
 		name    string
 		fields  fields
@@ -71,6 +80,17 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 				fields:  fields{prefix: '[', fromTime: time.Time{}, toTime: time.Time{}, postfix: ')'},
 			},
 		},
+		{
+			name:    "ValidScan2",
+			fields:  _fields2,
+			args:    args{src: "[2014-11-12 11:45:26+00:00,2014-11-12 12:45:26+00:00)"},
+			wantErr: false,
+			want: want{
+				prefix:  _fields2.prefix,
+				postfix: _fields2.postfix,
+				fields:  _fields2,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t1.Run(tt.name, func(t1 *testing.T) {
@@ -92,8 +112,12 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 				t1.Errorf("Scan() want = %v, got %v", string(tt.want.postfix), string(t.postfix))
 			}
 
-			if t.FromTime.Time != tt.want.fields.fromTime {
-				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime)
+			// if t.FromTime.Time != tt.want.fields.fromTime {
+
+			// 	t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime.Time)
+			// }
+			if !reflect.DeepEqual(t.FromTime.Time, tt.want.fields.fromTime) {
+				t1.Errorf("Scan() want = %v, got %v", tt.want.fields.fromTime, t.FromTime.Time)
 			}
 		})
 	}
@@ -126,7 +150,7 @@ func Test_Tstzrange_Value(t1 *testing.T) {
 				toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
 				postfix:  ')',
 			},
-			want:    "[2014-11-12 11:45:26+05:30,2014-11-12 12:45:26+05:30)",
+			want:    "[2014-11-12T11:45:26+05:30,2014-11-12T12:45:26+05:30)",
 			wantErr: false,
 		},
 		{
@@ -146,7 +170,7 @@ func Test_Tstzrange_Value(t1 *testing.T) {
 				fromTime: timeExample,
 				toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
 			},
-			want:    "[2014-11-12 11:45:26+05:30,2014-11-12 12:45:26+05:30)",
+			want:    "[2014-11-12T11:45:26+05:30,2014-11-12T12:45:26+05:30)",
 			wantErr: false,
 		},
 	}
@@ -196,7 +220,7 @@ func Test_Tstzrange_fromTimeString(t1 *testing.T) {
 				toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
 				postfix:  ')',
 			},
-			want: "2014-11-12 11:45:26+05:30",
+			want: "2014-11-12T11:45:26+05:30",
 		},
 	}
 	for _, tt := range tests {
@@ -240,7 +264,7 @@ func Test_Tstzrange_toTimeString(t1 *testing.T) {
 				toTime:   timeExample.Add(time.Duration(1 * time.Hour)),
 				postfix:  ')',
 			},
-			want: "2014-11-12 12:45:26+05:30",
+			want: "2014-11-12T12:45:26+05:30",
 		},
 	}
 	for _, tt := range tests {
@@ -262,8 +286,8 @@ func TestTstzrangeDateParser_UnmarshalJSON(t *testing.T) {
 	inputJson := []byte(`{
 		"room": 1079,
 		"dttm": {
-			"fromTime": "Mon, 02 Jan 2016 15:04:05 -0700",
-			"toTime": "Mon, 02 Jan 2016 17:04:05 -0700"
+			"fromTime": "2016-01-02T15:04:05-07:00",
+			"toTime": "2016-01-02T17:04:05-07:00"
 		}
 	}`)
 
@@ -328,8 +352,8 @@ func ExampleTstzrange_String() {
 	inputJson := []byte(`{
 		"room": 1079,
 		"dttm": {
-			"fromTime": "Mon, 02 Jan 2016 15:04:05 -0700",
-			"toTime": "Mon, 02 Jan 2016 17:04:05 -0700"
+			"fromTime": "2016-01-02T15:04:05-07:00",
+			"toTime": "2016-01-02T17:04:05-07:00"
 		}
 	}`)
 
@@ -341,7 +365,7 @@ func ExampleTstzrange_String() {
 	df := &Tstzrgt{}
 	_ = json.Unmarshal(inputJson, &df)
 
-	fmt.Println(df)
+	// fmt.Println(df)
 	// Output: &{1079 [2016-01-02 15:04:05-07:00,2016-01-02 17:04:05-07:00)}
 }
 
@@ -370,21 +394,21 @@ func TestTstzrange_Empty(t1 *testing.T) {
 		{
 			name: "FalseWhenFromAndTrue",
 			args: args{
-				data: []byte(`{"room": 1079,"dttm": {"fromTime": "Mon, 02 Jan 2016 15:04:05 -0700","toTime": "Mon, 02 Jan 2016 17:04:05 -0700"}}`),
+				data: []byte(`{"room": 1079,"dttm": {"fromTime": "2016-01-02T15:04:05-07:00","toTime": "2016-01-02T17:04:05-07:00"}}`),
 			},
 			want: false,
 		},
 		{
 			name: "TrueWhenFromEmpty",
 			args: args{
-				data: []byte(`{"room": 1079,"dttm": {"toTime": "Mon, 02 Jan 2016 17:04:05 -0700"}}`),
+				data: []byte(`{"room": 1079,"dttm": {"toTime": "2016-01-02T15:04:05-07:00"}}`),
 			},
 			want: true,
 		},
 		{
 			name: "TrueWhenToEmpty",
 			args: args{
-				data: []byte(`{"room": 1079,"dttm": {"fromTime": "Mon, 02 Jan 2016 17:04:05 -0700"}}`),
+				data: []byte(`{"room": 1079,"dttm": {"fromTime": "2016-01-02T15:04:05-07:00"}}`),
 			},
 			want: true,
 		},
