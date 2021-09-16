@@ -16,7 +16,7 @@ type TstzrangeI interface {
 }
 
 //var _ TstzrangeI = Tstzrange{}
-var timeFormat = "2006-01-02T15:04:05-07:00"
+var timeFormat = time.RFC3339 //"2006-01-02T15:04:05-07:00"
 
 func NewTstzrange(prefix rune, fromTime, toTime time.Time, postfix rune) (*Tstzrange, error) {
 	return &Tstzrange{prefix: prefix, FromTime: DateParser{fromTime}, ToTime: DateParser{toTime}, postfix: postfix}, nil

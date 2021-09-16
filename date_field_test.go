@@ -34,6 +34,14 @@ func TestDateParser_UnmarshalJSON(t *testing.T) {
 			},
 			wantErr: false,
 		},
+		{
+			name:   "BasicParse2",
+			fields: fields{},
+			args: args{
+				data: []byte("2016-01-02T17:04:05+05:30"),
+			},
+			wantErr: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
