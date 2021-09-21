@@ -35,6 +35,6 @@ func (df DateParser) MarshalJSON() ([]byte, error) {
 	return []byte(stamp), nil
 }
 
-func (df DateParser) GetString() string {
+func (df DateParser) String() string {
 	return df.Format(timeFormat)
 }
