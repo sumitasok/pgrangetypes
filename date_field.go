@@ -34,3 +34,7 @@ func (df DateParser) MarshalJSON() ([]byte, error) {
 	stamp := fmt.Sprintf("\"%s\"", time.Time(df.Time).Format(timeFormat))
 	return []byte(stamp), nil
 }
+
+func (df DateParser) GetString() string {
+	return df.Format(timeFormat)
+}

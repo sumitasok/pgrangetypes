@@ -10,7 +10,7 @@ import (
 )
 
 func Test_Tstzrange_Scan(t1 *testing.T) {
-	layout := "2006-01-02T15:04:05-07:00"
+	layout := time.RFC3339 //"2006-01-02T15:04:05-07:00"
 	str := "2014-11-12T11:45:26+05:30"
 	str2 := "2014-11-12T11:45:26+00:00"
 	timeExample, err := time.Parse(layout, str)
@@ -83,7 +83,7 @@ func Test_Tstzrange_Scan(t1 *testing.T) {
 		{
 			name:    "ValidScan2",
 			fields:  _fields2,
-			args:    args{src: "[2014-11-12 11:45:26+00:00,2014-11-12 12:45:26+00:00)"},
+			args:    args{src: "[2014-11-12T11:45:26+00:00,2014-11-12T12:45:26+00:00)"},
 			wantErr: false,
 			want: want{
 				prefix:  _fields2.prefix,
