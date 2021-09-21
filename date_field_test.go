@@ -261,7 +261,7 @@ func ExampleDateParser_UnmarshalJSON() {
 	df := &Data{}
 	_ = json.Unmarshal(inputJson, &df)
 	fmt.Println(df)
-	// Output: &{{2016-01-02 15:04:05 -0700 -0700 2016-01-02 17:04:05 -0700 -0700}}
+	// Output: &{{2016-01-02T15:04:05-07:00 2016-01-02T17:04:05-07:00}}
 }
 
 func TestDateParserOneTimeField_MarshalJSON(t *testing.T) {
