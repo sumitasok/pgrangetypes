@@ -38,3 +38,7 @@ func (df DateParser) MarshalJSON() ([]byte, error) {
 func (df DateParser) String() string {
 	return df.Format(timeFormat)
 }
+
+func (df DateParser) StringUTC() string {
+	return df.UTC().Format(timeFormat)
+}
