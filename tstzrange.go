@@ -3,6 +3,7 @@ package pgrangetypes
 import (
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -40,7 +41,9 @@ func (t Tstzrange) String() string {
 		postfix = ")"
 	} // default postfix
 
-	return prefix + t.fromTimeString() + "," + t.toTimeString() + postfix
+	tString := fmt.Sprintf("%s%q,%q%s", prefix, t.fromTimeString(), t.toTimeString(), postfix)
+	// tString := prefix + "\"" + t.fromTimeString() + "\"" + "," + "\"" + t.toTimeString() + "\"" + postfix
+	return tString
 }
 
 func (t Tstzrange) fromTimeString() string {
